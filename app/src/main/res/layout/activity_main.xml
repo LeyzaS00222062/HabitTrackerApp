@@ -7,17 +7,17 @@
     android:padding="16dp"
     android:background="#F3E5F5">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="24dp"
+        android:paddingVertical="8dp">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:text="Daily Habit Tracker"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -27,11 +27,14 @@
             android:id="@+id/btnCalendar"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:src="@android:drawable/ic_menu_month"
             android:contentDescription="Calendar"
-            android:tint="#7B1FA2"/>
-    </LinearLayout>
+            android:tint="#7B1FA2"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="fitCenter" />
+    </RelativeLayout>
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"

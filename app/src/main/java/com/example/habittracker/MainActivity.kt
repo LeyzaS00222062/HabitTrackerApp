@@ -3,6 +3,7 @@ package com.example.habittracker
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etHabitName: EditText
     private lateinit var btnAddHabit: Button
     private lateinit var btnViewStats: Button
+    private lateinit var btnCalendar: ImageButton
     private lateinit var rvHabits: RecyclerView
     private lateinit var tvNoHabits: TextView
     private lateinit var tvHabitCount: TextView
@@ -33,6 +35,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        supportActionBar?.hide()
 
         dbHelper = HabitDatabaseHelper(this)
 
@@ -109,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                 habitsByDate.entries.sortedByDescending { it.key }.take(10).forEach { (date, habits) ->
                     append("$date\n")
                     habits.forEach { habit ->
-                        append(". ${habit.habitName}\n")
+                        append("${habit.habitName}\n")
                     }
                     append("\n")
                 }
@@ -161,7 +165,7 @@ class MainActivity : AppCompatActivity() {
             buildString {
                 append("History for '${habit.habitName}':\n\n")
                 history.forEach{ h ->
-                    append(". ${h.date}\n")
+                    append("${h.date}\n")
                 }
                 append("\nTotal entries: ${history.size}")
             }
@@ -194,14 +198,14 @@ class MainActivity : AppCompatActivity() {
         val message = buildString {
             append("Your Habit Statistics\n\n")
             append("Most recorded habit:\n")
-            append("${mostFrequent.key} - ${mostFrequent.value} times\n\n")
+            append("${mostFrequent.key} : ${mostFrequent.value} times\n\n")
 
             append("Least recorded habit:\n")
-            append("${leastFrequent.key} - ${leastFrequent.value} times\n\n")
+            append("${leastFrequent.key} : ${leastFrequent.value} times\n\n")
 
             append("All Habits:\n")
             sortedStats.forEach{ (habit,count) ->
-                append(". $habit: $count times\n")
+                append("$habit: $count times\n")
             }
 
             append("\nTotal habits tracked: ${stats.values.sum()}")
