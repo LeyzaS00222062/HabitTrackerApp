@@ -21,6 +21,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnViewStats: Button
     private lateinit var rvHabits: RecyclerView
     private lateinit var tvNoHabits: TextView
+    private lateinit var tvHabitCount: TextView
+    private lateinit var tvProgressText: TextView
+    private lateinit var tvProgressNumber: TextView
 
     private lateinit var habitAdapter: HabitAdapter
     private lateinit var  dbHelper: HabitDatabaseHelper
@@ -36,8 +39,12 @@ class MainActivity : AppCompatActivity() {
         etHabitName = findViewById(R.id.etHabitName)
         btnAddHabit = findViewById(R.id.btnAddHabit)
         btnViewStats = findViewById(R.id.btnViewStats)
+        btnCalendar = findViewById(R.id.btnCalendar)
         rvHabits = findViewById(R.id.rvHabits)
         tvNoHabits = findViewById(R.id.tvNoHabits)
+        tvHabitCount = findViewById(R.id.tvHabitCount)
+        tvProgressText = findViewById(R.id.tvProgressText)
+        tvProgressNumber = findViewById(R.id.tvProgressNumber)
 
         habitAdapter = HabitAdapter(habitsList){ habit ->
             showHabitHistory(habit)
@@ -53,6 +60,10 @@ class MainActivity : AppCompatActivity() {
 
         btnViewStats.setOnClickListener {
             showStatistics()
+        }
+
+        btnCalendar.setOnClickListener{
+            showCalendarView()
         }
     }
 
@@ -86,6 +97,32 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun showCalendarView(){
+        val allHabits = dbHelper.getAllHabits()
+        val habitsByDate = allHabits.groupBy { it.date }
+
+        val message = buildString {
+            append("Your Habit Calendar:\n\n")
+            if (habitsByDate.isEmpty()){
+                append("No Habits added yet!")
+            }else{
+                habitsByDate.entries.sortedByDescending { it.key }.take(10).forEach { (date, habits) ->
+                    append("$date\n")
+                    habits.forEach { habit ->
+                        append(". ${habit.habitName}\n")
+                    }
+                    append("\n")
+                }
+            }
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Calendar")
+            .setMessage(message)
+            .setPositiveButton("Ok", null)
+            .show()
+
+    }
+
 
     private fun loadTodayHabits(){
         val today = getCurrentDate()
@@ -103,6 +140,16 @@ class MainActivity : AppCompatActivity() {
             tvNoHabits.visibility = TextView.GONE
             rvHabits.visibility = RecyclerView.VISIBLE
         }
+        updateProgressCard()
+    }
+
+    private fun updateProgressCard(){
+        val count = habitsList.size
+
+        tvHabitCount.text = "$count Habits"
+        tvProgressNumber.text = count.toString()
+        tvProgressText.text = if (count == 1) "$count habit completed today" else "$count habits completed today"
+
     }
 
     private fun showHabitHistory(habit: Habit){
