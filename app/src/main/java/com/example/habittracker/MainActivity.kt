@@ -8,8 +8,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.material3.FabPosition
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.habittracker.data.Habit
+import com.example.habittracker.data.HabitDatabaseHelper
+import com.google.android.material.animation.Positioning
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,11 +55,17 @@ class MainActivity : AppCompatActivity() {
         tvProgressText = findViewById(R.id.tvProgressText)
         tvProgressNumber = findViewById(R.id.tvProgressNumber)
 
-        habitAdapter = HabitAdapter(habitsList){ habit ->
-            showHabitHistory(habit)
-        }
+        habitAdapter = HabitAdapter(habitsList,
+            onItemClick = { habit ->
+            showHabitHistory(habit)},
+            onDeleteClick = { habit ->
+                showDeleteConfirmation(habit)
+            }
+        )
         rvHabits.layoutManager = LinearLayoutManager(this)
         rvHabits.adapter = habitAdapter
+
+        setupSwipeToDelete()
 
         loadTodayHabits()
 
@@ -69,6 +80,72 @@ class MainActivity : AppCompatActivity() {
         btnCalendar.setOnClickListener{
             showCalendarView()
         }
+    }
+
+    private fun setupSwipeToDelete() {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val habit = habitsList[position]
+                showDeleteConfirmation(habit, position)
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(rvHabits)
+    }
+
+    private fun showDeleteConfirmation(habit: Habit, position: Int = -1){
+        AlertDialog.Builder(this)
+            .setTitle("Delete the Habit?")
+            .setMessage("Are you sure you want to delete '${habit.habitName}'?")
+            .setPositiveButton("Delete"){_, _ ->
+                deleteHabit(habit, position)
+            }
+            .setNegativeButton("Cancel"){_,_ ->
+                if (position != -1) {
+                    habitAdapter.notifyItemChanged(position)
+                }
+            }
+            .setOnCancelListener {
+                if (position != -1){
+                    habitAdapter.notifyItemChanged(position)
+                }
+            }
+            .show()
+
+    }
+
+    private fun deleteHabit(habit: Habit, swipedPosition: Int = -1){
+        val deleted = dbHelper.deleteHabit(habit.id)
+
+        if (deleted > 0){
+            val position = if (swipedPosition != -1){
+                swipedPosition
+            }else {
+                habitsList.indexOfFirst { it.id == habit.id }
+            }
+
+            if (position != -1){
+                habitsList.removeAt(position)
+                habitAdapter.notifyItemChanged(position)
+                updateEmptyView()
+                Toast.makeText(this, "Habit has been deleted!", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this, "Failed to delete the habit.", Toast.LENGTH_SHORT).show()
+
+            if (swipedPosition != -1){
+                habitAdapter.notifyItemChanged(swipedPosition)
+            }
+        }
+
     }
 
     private fun addHabit(){

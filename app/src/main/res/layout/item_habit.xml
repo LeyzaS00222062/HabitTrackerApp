@@ -4,61 +4,74 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="12dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="#FFFFFF"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground">
+    app:cardBackgroundColor="#FFFFFF">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:padding="16dp">
 
+        <!-- Checkmark Icon -->
         <TextView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:id="@+id/tvCheckmark"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:text="✓"
             android:textSize="24sp"
+            android:textStyle="bold"
             android:textColor="#9C27B0"
             android:gravity="center"
             android:background="@drawable/circle_bg"
-            android:layout_marginEnd="16dp"/>
+            android:backgroundTint="#E1BEE7"/>
 
+        <!-- Habit Info -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:id="@+id/llHabitInfo"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_toEndOf="@id/tvCheckmark"
+            android:layout_toStartOf="@id/btnDelete"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvHabitName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Exercise"
+                android:text="Habit Name"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#4A148C"/>
+                android:textColor="#6A1B9A"/>
 
             <TextView
                 android:id="@+id/tvHabitTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="10:30 AM"
+                android:text="02:30 PM"
                 android:textSize="12sp"
-                android:textColor="#BA68C8"
+                android:textColor="#9C27B0"
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="›"
-            android:textSize="24sp"
-            android:textColor="#CE93D8"/>
-    </LinearLayout>
+        <!-- Delete Button -->
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@android:drawable/ic_menu_delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#E91E63"
+            android:contentDescription="Delete habit"
+            android:scaleType="fitCenter"/>
+
+    </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>

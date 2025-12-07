@@ -3,28 +3,23 @@ package com.example.habittracker
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.habittracker.data.Habit
+
 
 class HabitAdapter(
     private val habits: List<Habit>,
-    private val onItemClick: (Habit) -> Unit
+    private val onItemClick: (Habit) -> Unit,
+    private val onDeleteClick: (Habit) -> Unit
 ) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
 
-    inner class HabitViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class HabitViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvHabitName: TextView = itemView.findViewById(R.id.tvHabitName)
         val tvHabitTime: TextView = itemView.findViewById(R.id.tvHabitTime)
+        val btnDelete: ImageButton = itemView.findViewById(R.id.btnDelete)
 
-        init {
-            itemView.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    onItemClick(habits[position])
-                }
-            }
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
@@ -36,11 +31,16 @@ class HabitAdapter(
     override fun onBindViewHolder(holder: HabitViewHolder, position: Int) {
         val habit = habits[position]
         holder.tvHabitName.text = habit.habitName
+        holder.tvHabitTime.text = habit.getFormattedTime()
 
-        val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-        val time = timeFormat.format(Date(habit.timestamp))
-        holder.tvHabitTime.text = time
+        holder.itemView.setOnClickListener {
+            onItemClick(habit)
+        }
+
+        holder.btnDelete.setOnClickListener {
+            onDeleteClick(habit)
+        }
     }
 
-    override fun getItemCount() = habits.size
+    override fun getItemCount(): Int = habits.size
 }
