@@ -29,7 +29,7 @@ fun SettingsScreen(onNavigateBack: () -> Unit) {
                     Text("Version 1.0.0")
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "A simple and elegant habit tracking app to help you build better habits.",
+                        "My habit tracking app to help build better habits and monitor my routine.",
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -87,36 +87,6 @@ fun SettingsScreen(onNavigateBack: () -> Unit) {
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-            // Data Section
-            SettingsSection(title = "Data")
-
-            SettingsItem(
-                icon = Icons.Default.CloudUpload,
-                title = "Backup Data",
-                subtitle = "Save your habits to cloud"
-            ) {
-                // Backup functionality
-            }
-
-            SettingsItem(
-                icon = Icons.Default.Download,
-                title = "Restore Data",
-                subtitle = "Restore from backup"
-            ) {
-                // Restore functionality
-            }
-
-            SettingsItem(
-                icon = Icons.Default.DeleteForever,
-                title = "Clear All Data",
-                subtitle = "Delete all habit records",
-                destructive = true
-            ) {
-                // Clear data functionality
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
             // About Section
             SettingsSection(title = "About")
 
@@ -128,29 +98,6 @@ fun SettingsScreen(onNavigateBack: () -> Unit) {
                 showAboutDialog = true
             }
 
-            SettingsItem(
-                icon = Icons.Default.Share,
-                title = "Share App",
-                subtitle = "Tell your friends"
-            ) {
-                // Share functionality
-            }
-
-            SettingsItem(
-                icon = Icons.Default.Star,
-                title = "Rate App",
-                subtitle = "Rate us on the Play Store"
-            ) {
-                // Rate functionality
-            }
-
-            SettingsItem(
-                icon = Icons.Default.Policy,
-                title = "Privacy Policy",
-                subtitle = "Read our privacy policy"
-            ) {
-                // Privacy policy
-            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.habittracker.screens.
+package com.example.habittracker.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

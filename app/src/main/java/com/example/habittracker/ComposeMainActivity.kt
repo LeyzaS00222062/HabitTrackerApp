@@ -17,7 +17,7 @@ import androidx.navigation.compose.*
 import com.example.habittracker.data.HabitDatabaseHelper
 import com.example.habittracker.navigation.Screen
 import com.example.habittracker.ui.theme.HabitTrackerTheme
-import com.example.habittracker.ui.screens.*
+import com.example.habittracker.screens.*
 
 
 class ComposeMainActivity : ComponentActivity(){
@@ -25,7 +25,7 @@ class ComposeMainActivity : ComponentActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dbHelper = HelperDatabaseHelper(this)
+        dbHelper = HabitDatabaseHelper(this)
 
         setContent {
             HabitTrackerTheme {
@@ -77,7 +77,7 @@ fun MainScreen(dbHelper: HabitDatabaseHelper){
                         if (currentDestination?.route !in upperNavItems.map {it.route}){
                             IconButton(onClick = {navController.popBackStack()}) {
                                 Icon(
-                                    Icons.Default.Arrowback,
+                                    Icons.Default.ArrowBackIosNew,
                                     contentDescription = "Back",
                                     tint = MaterialTheme.colorScheme.onPrimary
                                 )
@@ -142,7 +142,7 @@ fun MainScreen(dbHelper: HabitDatabaseHelper){
                 .fillMaxSize()
                 .padding(paddingValues)
         ){
-            composable(Screen.AddHabit.route){
+            composable(Screen.Home.route){
                 HomeScreen(
                     dbHelper = dbHelper,
                     onNavigateToAddHabit = { navController.navigate(Screen.AddHabit.route) },

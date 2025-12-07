@@ -1,5 +1,9 @@
 package com.example.habittracker.screens
 
+import android.content.Context
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -8,8 +12,11 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.habittracker.data.Habit
 import com.example.habittracker.data.HabitDatabaseHelper
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,6 +30,8 @@ fun AddHabitScreen(
     var habitName by remember { mutableStateOf("") }
     var showSuccessDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    val view = LocalView.current
+    val context = LocalContext.current
 
     val commonHabits = listOf(
         "Exercise" to Icons.Default.FitnessCenter,
@@ -32,6 +41,43 @@ fun AddHabitScreen(
         "Sleep 8 Hours" to Icons.Default.Bedtime,
         "Healthy Eating" to Icons.Default.Restaurant
     )
+
+    fun vibrateSuccess() {
+        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            // Create a double-tap success pattern
+            val timings = longArrayOf(0, 50, 50, 100)
+            val amplitudes = intArrayOf(0, 150, 0, 255)
+            vibrator.vibrate(VibrationEffect.createWaveform(timings, amplitudes, -1))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(200)
+        }
+    }
+
+    fun vibrateError() {
+        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(100)
+        }
+    }
 
     if (showSuccessDialog) {
         AlertDialog(
@@ -159,14 +205,17 @@ fun AddHabitScreen(
                 onClick = {
                     if (habitName.trim().isEmpty()) {
                         errorMessage = "Please enter a habit name"
+                        vibrateError()
                     } else {
                         val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
                         val habit = Habit(habitName = habitName.trim(), date = today)
                         val id = dbHelper.insertHabit(habit)
                         if (id > 0) {
+                            vibrateSuccess()
                             showSuccessDialog = true
                         } else {
                             errorMessage = "Failed to add habit"
+                            vibrateError()
                         }
                     }
                 },
