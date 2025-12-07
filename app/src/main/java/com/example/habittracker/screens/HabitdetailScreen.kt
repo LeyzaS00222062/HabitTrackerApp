@@ -1,5 +1,9 @@
 package com.example.habittracker.screens
 
+import android.content.Context
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.habittracker.data.Habit
@@ -25,8 +30,26 @@ fun HabitDetailScreen(
     onNavigateBack: () -> Unit,
     onDeleteHabit: () -> Unit
 ) {
+    val context = LocalContext.current
     val history = remember { dbHelper.getHabitHistory(habitName) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    fun vibrateDelete() {
+        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(150, 200))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(150)
+        }
+    }
 
     if (showDeleteDialog) {
         AlertDialog(
@@ -37,6 +60,7 @@ fun HabitDetailScreen(
                 TextButton(
                     onClick = {
                         dbHelper.deleteHabitByName(habitName)
+                        vibrateDelete()
                         showDeleteDialog = false
                         onDeleteHabit()
                     }
