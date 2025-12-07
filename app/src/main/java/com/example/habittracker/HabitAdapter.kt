@@ -14,8 +14,8 @@ class HabitAdapter(
 ) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
 
     inner class HabitViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvHabitName: TextView = itemView.findViewById(tvHabitName)
-        val tvHabitTime: TextView = itemView.findViewById(tvHabitTime)
+        val tvHabitName: TextView = itemView.findViewById(R.id.tvHabitName)
+        val tvHabitTime: TextView = itemView.findViewById(R.id.tvHabitTime)
 
         init {
             itemView.setOnClickListener {
