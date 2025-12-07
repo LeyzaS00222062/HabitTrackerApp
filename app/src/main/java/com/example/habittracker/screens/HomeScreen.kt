@@ -1,5 +1,9 @@
 package com.example.habittracker.screens
 
+import android.content.Context
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +20,7 @@ import com.example.habittracker.data.Habit
 import com.example.habittracker.data.HabitDatabaseHelper
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun HomeScreen(
@@ -23,6 +28,7 @@ fun HomeScreen(
     onNavigateToAddHabit: () -> Unit,
     onNavigateToHabitDetail: (String) -> Unit
 ) {
+    val context = LocalContext.current
     val today = remember {
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
     }
@@ -33,6 +39,23 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         habits = dbHelper.getHabitsByDate(today)
+    }
+
+    fun vibrateDelete() {
+        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(150, 200))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(150)
+        }
     }
 
     if (showDeleteDialog && habitToDelete != null) {
@@ -46,6 +69,7 @@ fun HomeScreen(
                         habitToDelete?.let {
                             dbHelper.deleteHabit(it.id)
                             habits = dbHelper.getHabitsByDate(today)
+                            vibrateDelete()
                         }
                         showDeleteDialog = false
                     }
